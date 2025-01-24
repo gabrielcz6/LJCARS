@@ -13,8 +13,6 @@ def consulta_servicio():
     placa = st.text_input("Ingrese la placa del vehículo")
     buscar = st.button("Buscar")
     
-     # Título
-    a=st.text_input("Ingrese la placa del vehícular")
     if placa =="ADE239":
        # Título
        st.title("Servicio de Mantenimiento")
