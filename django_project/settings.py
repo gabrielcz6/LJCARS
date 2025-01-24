@@ -27,7 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL = '/login/'
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # Permite logueo por username
+    'allauth.account.auth_backends.AuthenticationBackend',  # Logueo por email con allauth
+)
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,17 +42,34 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #local:
-    'accounts.apps.AccountsConfig', 
-    "posts.apps.PostsConfig", # new
+    "django.contrib.sites", # new
+    
+
     # 3rd-party apps
     "rest_framework", # new
     "corsheaders", # new
-]
+    "rest_framework.authtoken", #new
+    "allauth", # new
+    "allauth.account", # new
+    "allauth.socialaccount", # new
 
-REST_FRAMEWORK = { # new
+    "dj_rest_auth", # new
+    "dj_rest_auth.registration", # new
+
+    #local:
+    'accounts.apps.AccountsConfig', 
+    "posts.apps.PostsConfig", # new
+    #
+]
+SITE_ID = 1 # new
+# django_project/settings.py
+REST_FRAMEWORK = {
 "DEFAULT_PERMISSION_CLASSES": [
-"rest_framework.permissions.AllowAny",
+"rest_framework.permissions.IsAuthenticated", # new
+],
+"DEFAULT_AUTHENTICATION_CLASSES": [ # new
+"rest_framework.authentication.SessionAuthentication",
+"rest_framework.authentication.TokenAuthentication",
 ],
 }
 
@@ -55,13 +77,23 @@ REST_FRAMEWORK = { # new
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "corsheaders.middleware.CorsMiddleware", #new
+    #"corsheaders.middleware.CorsMiddleware", #new
+    'allauth.account.middleware.AccountMiddleware',  # Añadir esta línea
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # Permite logueo por username
+    'allauth.account.auth_backends.AuthenticationBackend',  # Logueo por email con allauth
+)
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 
 CORS_ORIGIN_WHITELIST = (
 "http://localhost:3000",
@@ -85,10 +117,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "django.template.context_processors.request", # new
+
             ],
         },
     },
 ]
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" # new
 
 WSGI_APPLICATION = 'django_project.wsgi.application'
 
